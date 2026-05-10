@@ -1,0 +1,21 @@
+{
+  "name": "skills",
+  "version": "0.1.0",
+  "description": "Custom skills repository",
+  "main": "index.ts",
+  "type": "module",
+  "scripts": {
+    "new": "bun run scripts/new.ts",
+    "validate": "bun run scripts/validate-skills.ts",
+    "prepare": "husky",
+    "release": "standard-version --config .versionrc.cjs"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.0.0",
+    "@commitlint/config-conventional": "^19.0.0",
+    "@types/node": "^20.12.10",
+    "husky": "^9.0.11",
+    "standard-version": "^9.5.0",
+    "typescript": "^5.4.5"
+  }
+}
