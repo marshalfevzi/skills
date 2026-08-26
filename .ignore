@@ -1,0 +1,5 @@
+# Allowlist for locally cloned reference repositories.
+# These are excluded from git via .gitignore but kept readable to
+# search/glob tooling (.ignore takes precedence over .gitignore).
+!tmp/
+!tmp/**
