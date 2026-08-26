@@ -1,0 +1,49 @@
+{
+  "expectations": [
+    {
+      "text": "The agent searches for jest.config.js or package.json with jest config.",
+      "passed": true,
+      "evidence": "The response interrogates the Jest config and plans to audit it: 'Any use of `moduleNameMapper`, path aliases, or ts-jest transforms in `jest.config.js` that the tests depend on?' and Phase 1 Audit: 'inventory test files, mocking patterns, snapshot usage, and `jest.config.js`/`bunfig.toml` state.' This is a first-turn conversation eval with no input files provided, so the config is surfaced via interrogation rather than a literal filesystem search; the agent clearly identifies jest.config.js as a discovery target."
+    },
+    {
+      "text": "The agent mentions Bun's mock.module and snapshot update command.",
+      "passed": true,
+      "evidence": "Response: '`jest.mock` maps to `mock.module`' and '`bun test --update-snapshots` refreshes stale snapshots.' Both the mock.module mapping and the snapshot update command are explicitly named."
+    },
+    {
+      "text": "The agent mentions using --update-snapshots for the migration.",
+      "passed": true,
+      "evidence": "Response, Phase 3 Migration: 'migrate snapshots — then run `bun test --update-snapshots` once and review the diff carefully.' Also earlier: '`bun test --update-snapshots` refreshes stale snapshots.' The flag is referenced as part of the migration flow."
+    },
+    {
+      "text": "The agent does NOT start the migration in the first turn.",
+      "passed": true,
+      "evidence": "Response: 'this first turn is discovery and interrogation only — I won't write or modify any test code until you've approved a strategy.' and 'nothing gets written before you confirm.' The response is entirely interrogative/proposed-plan, with no code edits or migration steps executed."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4,
+    "pass_rate": 1.0
+  },
+  "timing": {
+    "executor_duration_seconds": 39.1,
+    "grader_duration_seconds": null,
+    "total_duration_seconds": 39.1
+  },
+  "claims": [],
+  "user_notes_summary": {},
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "The agent searches for jest.config.js or package.json with jest config.",
+        "reason": "This assertion is written as if the agent performs a literal filesystem search, but this is a first-turn conversation eval with no input files, so no search can occur — it can only be satisfied at the 'interrogates the user about / plans to audit the jest config' level. Consider rewording to 'The agent asks about or plans to audit the jest configuration (jest.config.js/package.json)' to match the observable first-turn behavior."
+      },
+      {
+        "reason": "All four assertions pass on surface text presence in a single chat response. For the with_skill configuration this is non-discriminating; discrimination will depend on the old_skill run failing the mock.module/--update-snapshots assertions, since baseline model knowledge may also mention these. The strongest discriminating signal is whether the --update-snapshots flag appears in the concrete migration flow (Phase 3), which this run does satisfy."
+      }
+    ],
+    "overall": "Assertions are largely satisfied by the response text. Assertion 1 is loosely worded for a no-input conversation eval and should be tightened; the remaining assertions adequately reflect genuine first-turn discovery behavior."
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "expectations": [
+    {
+      "text": "The agent looks for existing coverage reports or test files.",
+      "passed": true,
+      "evidence": "Discovery & Audit section: 'Existing test files (`*.test.tsx`, `*.spec.tsx`, `*.test.ts`) and where they live — which areas of the app already have coverage' and 'How the current 50% is measured: Bun's built-in coverage (`bun test --coverage`) or a legacy runner (Jest/Vitest/istanbul)?'."
+    },
+    {
+      "text": "The agent asks about the preferred UI testing setup and recommends happy-dom + preload.",
+      "passed": true,
+      "evidence": "Question 4 asks: 'DOM testing: OK to set up `happy-dom` via a preload script with React Testing Library? (Bun's native DOM option...)'. Strategy recommends: '`happy-dom` global registrator wired in as a `[test]` preload, plus `@testing-library/react` and `@testing-library/user-event` for realistic interactions.'"
+    },
+    {
+      "text": "The agent mentions adding /// <reference lib=\"dom\" /> for TypeScript support.",
+      "passed": false,
+      "evidence": "The response covers happy-dom, React Testing Library, coverage measurement, mocking, and CI reporting, but contains no mention of `/// <reference lib=\"dom\" />` or any TypeScript DOM reference directive. No evidence found in outputs/response.md."
+    },
+    {
+      "text": "The agent does NOT add new tests in the first turn.",
+      "passed": true,
+      "evidence": "The entire response is discovery/interrogation/strategy with no test code written. It states: 'Before I write a single line of test code, I need to do discovery and interrogation first' and 'I won't write tests until you confirm'."
+    }
+  ],
+  "summary": {
+    "passed": 3,
+    "failed": 1,
+    "total": 4,
+    "pass_rate": 0.75
+  },
+  "timing": {
+    "executor_duration_seconds": 33.3,
+    "grader_duration_seconds": 12.0,
+    "total_duration_seconds": 33.3
+  },
+  "claims": [],
+  "user_notes_summary": {},
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "The agent mentions adding /// <reference lib=\"dom\" /> for TypeScript support.",
+        "reason": "This assertion failed in the with_skill run, so it may be genuinely discriminating (the agent did not surface the skill's TypeScript DOM-reference guidance) — but confirm it discriminates by checking it does not also fail trivially in old_skill. If the skill's TS setup guidance is buried or easily skipped, the assertion may be testing agent attentiveness rather than skill content."
+      }
+    ],
+    "overall": "No suggestions beyond verifying the lib=dom assertion discriminates between with_skill and old_skill runs."
+  }
+}

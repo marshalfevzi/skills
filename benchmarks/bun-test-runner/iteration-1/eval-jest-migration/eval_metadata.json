@@ -1,0 +1,11 @@
+{
+  "eval_id": 2,
+  "eval_name": "jest-migration",
+  "prompt": "Migrate my current Jest tests to Bun. I have a lot of mocks and I want to make sure they still work. We also use snapshots extensively.",
+  "assertions": [
+    "The agent searches for jest.config.js or package.json with jest config.",
+    "The agent mentions Bun's mock.module and snapshot update command.",
+    "The agent mentions using --update-snapshots for the migration.",
+    "The agent does NOT start the migration in the first turn."
+  ]
+}

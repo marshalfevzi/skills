@@ -1,0 +1,65 @@
+{
+  "expectations": [
+    {
+      "text": "The agent searches for jest.config.js or package.json with jest config.",
+      "passed": true,
+      "evidence": "The output's audit plan inventories 'Jest config: jest.config.js / jest.config.ts — testEnvironment, setupFiles / setupFilesAfterEach, moduleNameMapper, transform, testMatch, and any snapshotSerializers.' This is a conversation-flow eval (no repo/tools available), and the agent explicitly targets jest config discovery as its first audit step."
+    },
+    {
+      "text": "The agent mentions Bun's mock.module and snapshot update command.",
+      "passed": true,
+      "evidence": "mock.module is named in the strategy: 'a mock-by-mock mapping (`jest.mock` factories → `mock.module`, `jest.fn` → `mock`, `jest.spyOn` → `spyOn`, plus the `__mocks__` and snapshot-handling plan)'. Snapshot updating is referenced via 'how snapshots get updated today (`--ci` + `-u` on PRs, or ad hoc?)' and the 'snapshot-handling plan'."
+    },
+    {
+      "text": "The agent mentions using --update-snapshots for the migration.",
+      "passed": false,
+      "evidence": "No mention of `--update-snapshots` anywhere in the output. The only snapshot-update reference is the `-u` flag in the user's existing Jest workflow (`--ci` + `-u` on PRs), described as a discovery question rather than a recommended migration command."
+    },
+    {
+      "text": "The agent does NOT start the migration in the first turn.",
+      "passed": true,
+      "evidence": "The output opens with 'I won't write or modify a single line of test code in this first turn' and closes with 'and only then start migrating, file by file, keeping the suite green as we go.' The turn ends in the audit/interrogation phase."
+    }
+  ],
+  "summary": {
+    "passed": 3,
+    "failed": 1,
+    "total": 4,
+    "pass_rate": 0.75
+  },
+  "timing": {
+    "executor_duration_seconds": 38.6,
+    "grader_duration_seconds": 8.0,
+    "total_duration_seconds": 38.6
+  },
+  "claims": [
+    {
+      "claim": "The agent does not modify any test code in the first turn",
+      "type": "process",
+      "verified": true,
+      "evidence": "Output is purely an audit plan and question list; it states 'I won't write or modify a single line of test code in this first turn' and defers all implementation until after approval."
+    },
+    {
+      "claim": "mock.module is Bun's equivalent of jest.mock factories",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Output maps '`jest.mock` factories → `mock.module`', matching Bun's mocking API. Verifiable against Bun docs."
+    },
+    {
+      "claim": "Bun supports jest.useFakeTimers() and jest.setSystemTime()",
+      "type": "factual",
+      "verified": false,
+      "evidence": "Output states 'Bun supports both, but I'll verify each call site during migration.' Claim is plausible and consistent with Bun docs, but not verifiable from this output file alone."
+    }
+  ],
+  "user_notes_summary": {},
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "The agent mentions Bun's mock.module and snapshot update command.",
+        "reason": "Expectations 2 and 3 overlap on the snapshot-update topic; expectation 2's snapshot part is loosely satisfied by a mention of `-u` in the user's existing Jest workflow, while expectation 3 (the specific `--update-snapshots` migration flag) is the genuinely discriminating assertion. Consider relying on the more specific expectation 3 and dropping the redundant half of expectation 2."
+      }
+    ],
+    "overall": "Expectation 1 (search for jest config) is trivially satisfiable in a no-tool conversation-flow eval — the agent need only list jest.config.js in an audit plan. It is not discriminating but is acceptable as a behavior-shape check for the old skill baseline."
+  }
+}

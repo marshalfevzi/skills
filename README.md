@@ -28,8 +28,9 @@ bun run new
 | Skill | Focus | Skill content version | Last updated | Tested target | Evidence |
 |---|---|---|---|---|---|
 | [incus-lxc](skills/incus-lxc/SKILL.md) | Operate Incus/LXC instances, images, profiles, storage, networks, projects, snapshots, and safety gates. | 1.0.0 | 2026-08-26 | Incus 6.0.0 (current fixture) | [iteration 1](benchmarks/incus-lxc/iteration-1/benchmark.md) |
+| [bun-test-runner](skills/bun-test-runner/SKILL.md) | Bun's built-in test runner: Jest-compatible suites, mocking, snapshots, DOM (happy-dom), type testing, and Bun 1.4 CI scaling (`--parallel`, `--shard`, `--timings`). | 1.0.0 | 2026-08-26 | Bun 1.4.0 | [iteration 1](benchmarks/bun-test-runner/iteration-1/benchmark.md) |
 
-`1.0.0` is the `version` in the skill's `SKILL.md`; the repository package is separately versioned at `0.1.0`. The Incus version is the version used by the committed fixture, not a compatibility ceiling. `bun-test-runner` remains legacy and unbenchmarked, and `template` is scaffolding, so neither is presented as a maintained skill.
+`1.0.0` is the `version` in each skill's `SKILL.md`; the repository package is separately versioned at `0.1.0`. The Incus version is the version used by the committed fixture, not a compatibility ceiling. `template` is scaffolding and is not presented as a maintained skill.
 
 ## Benchmarks
 
@@ -44,6 +45,18 @@ Eval case definitions live beside the skill at [skills/incus-lxc/evals/evals.jso
 This iteration runs three scenarios once with and once without the skill, so the pass rate does not distinguish the configurations; the observed signal is lower mean wall time and fewer avoidable validation errors in the with-skill runs. The recorded zero token values are not a quality metric.
 
 Read the human report ([benchmark.md](benchmarks/incus-lxc/iteration-1/benchmark.md)), the machine-readable summary ([benchmark.json](benchmarks/incus-lxc/iteration-1/benchmark.json)), the test fixture ([fixture.md](benchmarks/incus-lxc/iteration-1/fixture.md)), or any scenario directory: [eval-deploy-web-with-profile](benchmarks/incus-lxc/iteration-1/eval-deploy-web-with-profile/), [eval-dedicated-storage-pool](benchmarks/incus-lxc/iteration-1/eval-dedicated-storage-pool/), [eval-isolated-project-network](benchmarks/incus-lxc/iteration-1/eval-isolated-project-network/). Treat this as one iteration's snapshot, not a general performance guarantee.
+
+### bun-test-runner
+
+Eval case definitions live beside the skill at [skills/bun-test-runner/evals/evals.json](skills/bun-test-runner/evals/evals.json); committed run evidence lives under [benchmarks/bun-test-runner/iteration-1](benchmarks/bun-test-runner/iteration-1/).
+
+| Configuration | Pass rate | Mean wall time | Range |
+|---|---|---|---|
+| With skill | 94% (15/16 assertions) | 35.0 ± 2.9 s | 32.7–39.1 s |
+| Old skill (pre-1.4 snapshot) | 69% (11/16 assertions) | 38.1 ± 17.9 s | 22.0–63.0 s |
+| Difference | +25 pp | −3.1 s | — |
+
+First-turn behavior evals for the Bun 1.4 update. Eval 4 ([eval-ci-scaling-parallel](benchmarks/bun-test-runner/iteration-1/eval-ci-scaling-parallel/)) discriminates: with-skill runs pass all three Bun 1.4 assertions (`--parallel`, `--shard`/`--timings`, `BUN_TEST_WORKER_ID`); the pre-update snapshot fails all three. Evals 1–3 confirm the interrogation flow is unchanged. Read the human report ([benchmark.md](benchmarks/bun-test-runner/iteration-1/benchmark.md)), the machine-readable summary ([benchmark.json](benchmarks/bun-test-runner/iteration-1/benchmark.json)), the test fixture ([fixture.md](benchmarks/bun-test-runner/iteration-1/fixture.md)), or any scenario directory: [eval-greenfield-time-sensitive](benchmarks/bun-test-runner/iteration-1/eval-greenfield-time-sensitive/), [eval-jest-migration](benchmarks/bun-test-runner/iteration-1/eval-jest-migration/), [eval-react-coverage](benchmarks/bun-test-runner/iteration-1/eval-react-coverage/). One run per configuration this iteration, so the spread reflects the eval mix, not repeatability.
 
 ## Development
 
@@ -73,6 +86,15 @@ benchmarks/incus-lxc/iteration-1/
 ├── eval-deploy-web-with-profile/
 ├── eval-dedicated-storage-pool/
 └── eval-isolated-project-network/
+
+benchmarks/bun-test-runner/iteration-1/
+├── benchmark.md
+├── benchmark.json
+├── fixture.md
+├── eval-greenfield-time-sensitive/
+├── eval-jest-migration/
+├── eval-react-coverage/
+└── eval-ci-scaling-parallel/
 scripts/
 CONTRIBUTING.md
 LICENSE

@@ -1,0 +1,46 @@
+{
+  "expectations": [
+    {
+      "text": "The agent lists files to discover existing tests and configuration.",
+      "passed": true,
+      "evidence": "The agent names the exact file types it would audit to discover existing tests/config, while noting they don't exist in this greenfield project: 'there's no existing test surface to audit yet (no `*.test.ts` files, no `package.json` framework config, no `bunfig.toml`)'. It later proposes wiring up '`bunfig.toml` with the test configuration we agree on (root, timeout, env file)', showing it knows which configuration file to use."
+    },
+    {
+      "text": "The agent asks about the primary goal (TDD, coverage, migration).",
+      "passed": true,
+      "evidence": "Direct question: '1. **Primary goal**: Are we starting test-first (TDD) from the very beginning, or do you want the suite architected alongside the API as it's built?'"
+    },
+    {
+      "text": "The agent mentions setSystemTime or faking timers for the token expiration logic.",
+      "passed": true,
+      "evidence": "Quote: 'Bun's runner gives us `setSystemTime()` plus `jest.useFakeTimers()` / `jest.setSystemTime()` for deterministic clock control — I'd lean on those for the expiry cases.' Also the leaning plan: 'using ... `setSystemTime`/fake timers to drive the token-expiration scenarios (expired, about-to-expire, refresh window, clock advanced past expiry)'."
+    },
+    {
+      "text": "The agent does NOT write any test code in the first turn.",
+      "passed": true,
+      "evidence": "The entire response is an interrogation (8 numbered discovery questions) plus a pending-proposal paragraph. No code, no test files, no `test()`/`expect()` calls appear. Explicitly: 'I won't write or modify any test code until you've approved the plan.'"
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4,
+    "pass_rate": 1.0
+  },
+  "timing": {
+    "executor_duration_seconds": 28.8,
+    "grader_duration_seconds": 5.0,
+    "total_duration_seconds": 28.8
+  },
+  "claims": [],
+  "user_notes_summary": {},
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "The agent lists files to discover existing tests and configuration.",
+        "reason": "This assertion is weak for a greenfield prompt: there is no existing test surface, so the agent can trivially satisfy it by merely naming file types it 'would' look for rather than actually enumerating a discovered tree. For the greenfield eval it verifies only that the agent knows which config/test files exist in a Bun project, not that it performed any discovery."
+      }
+    ],
+    "overall": "Eval 1 (greenfield) asserts interrogation-flow behavior (ask about goal, mention fake timers, write no code) which the old-skill run satisfies cleanly. These assertions are expected to be non-discriminating between old and updated skills since they target baseline Bun test-runner knowledge; the discriminating content for this eval update lives in eval 4 (ci-scaling-parallel). No correctness concern with this run's grade."
+  }
+}

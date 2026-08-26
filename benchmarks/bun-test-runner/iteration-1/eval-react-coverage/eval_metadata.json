@@ -1,0 +1,11 @@
+{
+  "eval_id": 3,
+  "eval_name": "react-coverage",
+  "prompt": "I have 50% coverage, help me get to 80% with Bun. The project is a React app. We need to test the components properly.",
+  "assertions": [
+    "The agent looks for existing coverage reports or test files.",
+    "The agent asks about the preferred UI testing setup and recommends happy-dom + preload.",
+    "The agent mentions adding /// <reference lib=\"dom\" /> for TypeScript support.",
+    "The agent does NOT add new tests in the first turn."
+  ]
+}

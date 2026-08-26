@@ -1,0 +1,70 @@
+{
+  "expectations": [
+    {
+      "text": "The agent lists files to discover existing tests and configuration.",
+      "passed": true,
+      "evidence": "The response enumerates the test/config surface it would discover and reports on each: 'Since this is a new project there's no existing suite or config to audit — no `*.test.ts` files, no Jest/Vitest/Mocha baggage, no `bunfig.toml` yet.' It also asks about `package.json`/`bunfig.toml` scaffolding and test location (`src/**/*.test.ts` vs `tests/`), showing discovery of test files and configuration as a first step."
+    },
+    {
+      "text": "The agent asks about the primary goal (TDD, coverage, migration).",
+      "passed": true,
+      "evidence": "Interrogation item 1 asks: '**Primary goal** — is this TDD for the new features as the API takes shape, or a coverage baseline once the core is written?'"
+    },
+    {
+      "text": "The agent mentions setSystemTime or faking timers for the token expiration logic.",
+      "passed": true,
+      "evidence": "Strategy section: '`setSystemTime()` to pin the clock, fake timers for any timeout/expiry-scan paths (Bun fakes `Date` too, and `jest.setSystemTime()` composes with `jest.advanceTimersByTime()`)' and 'deterministic, no `sleep()` calls'."
+    },
+    {
+      "text": "The agent does NOT write any test code in the first turn.",
+      "passed": true,
+      "evidence": "The entire response is interrogation plus a proposed strategy; it contains no test code or file writes. It explicitly closes: 'Once you confirm the plan — and only then — I'll implement it. No test code written yet, per the flow.' The only output artifact is this prose response."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4,
+    "pass_rate": 1.0
+  },
+  "execution_metrics": {},
+  "timing": {
+    "executor_duration_seconds": 32.7,
+    "grader_duration_seconds": 8.0,
+    "total_duration_seconds": 32.7
+  },
+  "claims": [
+    {
+      "claim": "The project is greenfield with no existing test suite or config",
+      "type": "process",
+      "verified": false,
+      "evidence": "The agent asserts 'there's no existing suite or config to audit — no `*.test.ts` files, no Jest/Vitest/Mocha baggage, no `bunfig.toml` yet', but this is an assertion in the chat response with no tool transcript available in the single-file evidence base to confirm discovery actually ran."
+    },
+    {
+      "claim": "The suite would use bun:test with setSystemTime/fake timers and mock.module at the boundary",
+      "type": "process",
+      "verified": true,
+      "evidence": "Strategy section states: 'A `bun:test` suite with the token-expiration logic as the first deep target: `setSystemTime()` to pin the clock... External dependencies get mocked at the module boundary with `mock.module` so token tests stay hermetic.'"
+    },
+    {
+      "claim": "No test code was written in the first turn",
+      "type": "quality",
+      "verified": true,
+      "evidence": "The artifact contains no test code or files; the agent states 'No test code written yet, per the flow.'"
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "The agent lists files to discover existing tests and configuration.",
+        "reason": "The agent could satisfy this by asserting the files were checked without any evidence, since the run's entire evidence base is a single prose response with no tool transcript. In this greenfield context the assertion passed trivially. Consider phrasing it as 'reports whether test files / bunfig.toml exist before proposing a strategy' if discovery rigor matters."
+      }
+    ],
+    "overall": "All four assertions pass and the response genuinely performs interrogation-first behavior for a greenfield time-sensitive suite. Given the single-file evidence base (no transcript), the discovery assertion is satisfied by the agent's own assertion rather than observed tool use; acceptable for this eval design, but noting it keeps the bar honest."
+  }
+}

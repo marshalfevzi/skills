@@ -33,6 +33,17 @@
         "The agent mentions adding /// <reference lib=\"dom\" /> for TypeScript support.",
         "The agent does NOT add new tests in the first turn."
       ]
+    },
+    {
+      "id": 4,
+      "prompt": "Our Bun test suite takes 25 minutes in CI and keeps getting worse. Around 400 test files, some of them hit a real Postgres database. What can we do?",
+      "expected_output": "The agent audits the suite, asks about CI machine count and constraints, and recommends Bun 1.4 scaling features: --parallel workers with per-worker databases keyed off BUN_TEST_WORKER_ID, --shard splitting across CI machines, and --timings/--update-timings for duration-based balancing.",
+      "expectations": [
+        "The agent recommends bun test --parallel for spreading files across CPU cores.",
+        "The agent recommends --shard for splitting across CI machines and --timings/--update-timings for balancing by duration.",
+        "The agent mentions BUN_TEST_WORKER_ID or JEST_WORKER_ID for giving each worker its own database/port.",
+        "The agent asks discovery/interrogation questions and does NOT write or modify test code in the first turn."
+      ]
     }
   ]
 }

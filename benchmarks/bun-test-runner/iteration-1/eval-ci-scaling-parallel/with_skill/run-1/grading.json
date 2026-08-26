@@ -1,0 +1,38 @@
+{
+  "expectations": [
+    {
+      "text": "The agent recommends bun test --parallel for spreading files across CPU cores.",
+      "passed": true,
+      "evidence": "response.md: 'Spread files across processes: `bun test --parallel` runs one file per worker process (default: one per CPU core). With 400 files where execution dominates, this is the biggest lever'"
+    },
+    {
+      "text": "The agent recommends --shard for splitting across CI machines and --timings/--update-timings for balancing by duration.",
+      "passed": true,
+      "evidence": "response.md: 'Balance CI by duration, not file count: record `--timings`, then split across machines with `bun test --shard=1/3 --parallel --timings=timings.json`' and 'run `bun test --timings=.bun-test-timings.json --update-timings` once — it records per-file wall-clock ms (slowest first)'. Also cites `--timings` for workers starting slowest-first."
+    },
+    {
+      "text": "The agent mentions BUN_TEST_WORKER_ID or JEST_WORKER_ID for giving each worker its own database/port.",
+      "passed": true,
+      "evidence": "response.md: 'key per-worker resources off `BUN_TEST_WORKER_ID` (1-based; `JEST_WORKER_ID` is also set, so existing Jest keying keeps working) — e.g. `const dbName = `app_test_${process.env.BUN_TEST_WORKER_ID ?? \"1\"}`'"
+    },
+    {
+      "text": "The agent asks discovery/interrogation questions and does NOT write or modify test code in the first turn.",
+      "passed": true,
+      "evidence": "response.md opens with 'before I recommend a concrete setup I need to interrogate a few things. Per my working flow, I won't touch any test code until you approve a plan' and lists six numbered discovery questions (CI topology, where the 25 minutes goes, Postgres setup, isolation, CI reporting, failure policy). It ends with 'Answer the six questions above ... I'll turn this into a concrete step-by-step plan for your approval. No test code changes until then.' No code modifications appear in the response."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4,
+    "pass_rate": 1.0
+  },
+  "timing": {
+    "executor_duration_seconds": 34.9,
+    "grader_duration_seconds": null,
+    "total_duration_seconds": 34.9
+  },
+  "claims": [],
+  "user_notes_summary": {},
+  "eval_feedback": {}
+}

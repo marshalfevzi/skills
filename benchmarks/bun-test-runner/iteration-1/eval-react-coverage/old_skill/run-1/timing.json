@@ -1,0 +1,6 @@
+{
+  "total_tokens": null,
+  "duration_ms": 22000,
+  "total_duration_seconds": 22.0,
+  "note": "total_tokens not exposed in task result"
+}

@@ -1,0 +1,41 @@
+{
+  "expectations": [
+    {
+      "text": "The agent recommends bun test --parallel for spreading files across CPU cores.",
+      "passed": false,
+      "evidence": "The response recommends only within-file concurrency via 'test.concurrent' ('Bun's test.concurrent overlaps async tests in the same file') and never mentions the '--parallel' flag or file-across-workers parallelism. The discovery pass enumerates files but offers no --parallel worker-process recommendation."
+    },
+    {
+      "text": "The agent recommends --shard for splitting across CI machines and --timings/--update-timings for balancing by duration.",
+      "passed": false,
+      "evidence": "No occurrence of '--shard', '--timings', or '--update-timings' anywhere in the response. CI is discussed (question 2 asks how many machines/cores the CI job runs on) but no sharding or duration-based balancing mechanism is proposed."
+    },
+    {
+      "text": "The agent mentions BUN_TEST_WORKER_ID or JEST_WORKER_ID for giving each worker its own database/port.",
+      "passed": false,
+      "evidence": "Neither BUN_TEST_WORKER_ID nor JEST_WORKER_ID is mentioned. The response raises the shared-DB concern ('do they hit a real shared database') and suggests an isolated '.env.test' database, but never keys per-worker resources off a worker ID."
+    },
+    {
+      "text": "The agent asks discovery/interrogation questions and does NOT write or modify test code in the first turn.",
+      "passed": true,
+      "evidence": "The response asks six concrete interrogation questions (time distribution, CI machine count, Postgres shared-state, test independence, DB-in-CI need, failure behavior) and explicitly states 'all read-only — no test code will be touched' and 'before writing or changing a single line of test code.' No code is written or modified."
+    }
+  ],
+  "summary": {
+    "passed": 1,
+    "failed": 3,
+    "total": 4,
+    "pass_rate": 0.25
+  },
+  "timing": {
+    "executor_duration_seconds": 63.0,
+    "grader_duration_seconds": 2.0,
+    "total_duration_seconds": 63.0
+  },
+  "claims": [],
+  "user_notes_summary": {},
+  "eval_feedback": {
+    "suggestions": [],
+    "overall": "No suggestions — the old_skill run fails the three Bun 1.4 scaling assertions (--parallel, --shard/--timings, BUN_TEST_WORKER_ID) while passing only the interrogation-flow assertion, confirming these assertions discriminate between the old snapshot and the updated skill. total_tokens was not exposed by the harness (timing.json reports null), so timing reflects duration only."
+  }
+}

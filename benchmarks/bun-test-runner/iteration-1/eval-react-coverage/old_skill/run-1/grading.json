@@ -1,0 +1,46 @@
+{
+  "expectations": [
+    {
+      "text": "The agent looks for existing coverage reports or test files.",
+      "passed": true,
+      "evidence": "Response Discovery & Audit section: \"Existing test files — `*.test.ts`, `*.test.tsx`, `*.spec.tsx`, and friends — to see what's already covered and what the current 50% is made of.\" and \"Where the uncovered 50% lives — I'll pull a coverage report and identify the biggest, riskiest gaps.\""
+    },
+    {
+      "text": "The agent asks about the preferred UI testing setup and recommends happy-dom + preload.",
+      "passed": true,
+      "evidence": "Deep Interrogation Q4: \"Can I configure `happy-dom` for the component tests? It's the standard Bun path — I'd set up `@happy-dom/global-registrator` via a preload script and use React Testing Library for rendering and interaction.\""
+    },
+    {
+      "text": "The agent mentions adding /// <reference lib=\"dom\" /> for TypeScript support.",
+      "passed": false,
+      "evidence": "No mention of `/// <reference lib=\"dom\" />`, `reference lib`, or `lib=\"dom\"` anywhere in the response. The DOM setup discussion covers happy-dom/preload but does not address the TypeScript DOM lib reference."
+    },
+    {
+      "text": "The agent does NOT add new tests in the first turn.",
+      "passed": true,
+      "evidence": "Response states: \"I'm not going to write or modify any test code yet — the first step here is understanding your suite and your app.\" and \"Only after you approve do I start implementing tests.\" No test files or test code are added; the turn is a discovery/interrogation message."
+    }
+  ],
+  "summary": {
+    "passed": 3,
+    "failed": 1,
+    "total": 4,
+    "pass_rate": 0.75
+  },
+  "timing": {
+    "executor_duration_seconds": 22.0,
+    "grader_duration_seconds": 8.0,
+    "total_duration_seconds": 22.0
+  },
+  "claims": [],
+  "user_notes_summary": {},
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "The agent mentions adding /// <reference lib=\"dom\" /> for TypeScript support.",
+        "reason": "This assertion checks for a specific technical detail (the TS DOM lib reference) that the skill would surface. It discriminates meaningfully between the updated skill and this baseline run, since the old_skill response covers happy-dom/preload but omits the lib reference. No change needed — it appears to be working as intended."
+      }
+    ],
+    "overall": "Evals look solid. The happy-dom/preload and no-tests-first-turn assertions pass with genuine substance, and the missing TS lib reference correctly discriminates against the baseline skill."
+  }
+}

@@ -1,0 +1,385 @@
+{
+  "metadata": {
+    "skill_name": "bun-test-runner",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-08-26T14:57:55Z",
+    "evals_run": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 32.7,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The agent lists files to discover existing tests and configuration.",
+          "passed": true,
+          "evidence": "The response enumerates the test/config surface it would discover and reports on each: 'Since this is a new project there's no existing suite or config to audit \u2014 no `*.test.ts` files, no Jest/Vitest/Mocha baggage, no `bunfig.toml` yet.' It also asks about `package.json`/`bunfig.toml` scaffolding and test location (`src/**/*.test.ts` vs `tests/`), showing discovery of test files and configuration as a first step."
+        },
+        {
+          "text": "The agent asks about the primary goal (TDD, coverage, migration).",
+          "passed": true,
+          "evidence": "Interrogation item 1 asks: '**Primary goal** \u2014 is this TDD for the new features as the API takes shape, or a coverage baseline once the core is written?'"
+        },
+        {
+          "text": "The agent mentions setSystemTime or faking timers for the token expiration logic.",
+          "passed": true,
+          "evidence": "Strategy section: '`setSystemTime()` to pin the clock, fake timers for any timeout/expiry-scan paths (Bun fakes `Date` too, and `jest.setSystemTime()` composes with `jest.advanceTimersByTime()`)' and 'deterministic, no `sleep()` calls'."
+        },
+        {
+          "text": "The agent does NOT write any test code in the first turn.",
+          "passed": true,
+          "evidence": "The entire response is interrogation plus a proposed strategy; it contains no test code or file writes. It explicitly closes: 'Once you confirm the plan \u2014 and only then \u2014 I'll implement it. No test code written yet, per the flow.' The only output artifact is this prose response."
+        }
+      ],
+      "notes": [],
+      "eval_name": "greenfield-time-sensitive"
+    },
+    {
+      "eval_id": 2,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 39.1,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The agent searches for jest.config.js or package.json with jest config.",
+          "passed": true,
+          "evidence": "The response interrogates the Jest config and plans to audit it: 'Any use of `moduleNameMapper`, path aliases, or ts-jest transforms in `jest.config.js` that the tests depend on?' and Phase 1 Audit: 'inventory test files, mocking patterns, snapshot usage, and `jest.config.js`/`bunfig.toml` state.' This is a first-turn conversation eval with no input files provided, so the config is surfaced via interrogation rather than a literal filesystem search; the agent clearly identifies jest.config.js as a discovery target."
+        },
+        {
+          "text": "The agent mentions Bun's mock.module and snapshot update command.",
+          "passed": true,
+          "evidence": "Response: '`jest.mock` maps to `mock.module`' and '`bun test --update-snapshots` refreshes stale snapshots.' Both the mock.module mapping and the snapshot update command are explicitly named."
+        },
+        {
+          "text": "The agent mentions using --update-snapshots for the migration.",
+          "passed": true,
+          "evidence": "Response, Phase 3 Migration: 'migrate snapshots \u2014 then run `bun test --update-snapshots` once and review the diff carefully.' Also earlier: '`bun test --update-snapshots` refreshes stale snapshots.' The flag is referenced as part of the migration flow."
+        },
+        {
+          "text": "The agent does NOT start the migration in the first turn.",
+          "passed": true,
+          "evidence": "Response: 'this first turn is discovery and interrogation only \u2014 I won't write or modify any test code until you've approved a strategy.' and 'nothing gets written before you confirm.' The response is entirely interrogative/proposed-plan, with no code edits or migration steps executed."
+        }
+      ],
+      "notes": [],
+      "eval_name": "jest-migration"
+    },
+    {
+      "eval_id": 3,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.75,
+        "passed": 3,
+        "failed": 1,
+        "total": 4,
+        "time_seconds": 33.3,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The agent looks for existing coverage reports or test files.",
+          "passed": true,
+          "evidence": "Discovery & Audit section: 'Existing test files (`*.test.tsx`, `*.spec.tsx`, `*.test.ts`) and where they live \u2014 which areas of the app already have coverage' and 'How the current 50% is measured: Bun's built-in coverage (`bun test --coverage`) or a legacy runner (Jest/Vitest/istanbul)?'."
+        },
+        {
+          "text": "The agent asks about the preferred UI testing setup and recommends happy-dom + preload.",
+          "passed": true,
+          "evidence": "Question 4 asks: 'DOM testing: OK to set up `happy-dom` via a preload script with React Testing Library? (Bun's native DOM option...)'. Strategy recommends: '`happy-dom` global registrator wired in as a `[test]` preload, plus `@testing-library/react` and `@testing-library/user-event` for realistic interactions.'"
+        },
+        {
+          "text": "The agent mentions adding /// <reference lib=\"dom\" /> for TypeScript support.",
+          "passed": false,
+          "evidence": "The response covers happy-dom, React Testing Library, coverage measurement, mocking, and CI reporting, but contains no mention of `/// <reference lib=\"dom\" />` or any TypeScript DOM reference directive. No evidence found in outputs/response.md."
+        },
+        {
+          "text": "The agent does NOT add new tests in the first turn.",
+          "passed": true,
+          "evidence": "The entire response is discovery/interrogation/strategy with no test code written. It states: 'Before I write a single line of test code, I need to do discovery and interrogation first' and 'I won't write tests until you confirm'."
+        }
+      ],
+      "notes": [],
+      "eval_name": "react-coverage"
+    },
+    {
+      "eval_id": 4,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 34.9,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The agent recommends bun test --parallel for spreading files across CPU cores.",
+          "passed": true,
+          "evidence": "response.md: 'Spread files across processes: `bun test --parallel` runs one file per worker process (default: one per CPU core). With 400 files where execution dominates, this is the biggest lever'"
+        },
+        {
+          "text": "The agent recommends --shard for splitting across CI machines and --timings/--update-timings for balancing by duration.",
+          "passed": true,
+          "evidence": "response.md: 'Balance CI by duration, not file count: record `--timings`, then split across machines with `bun test --shard=1/3 --parallel --timings=timings.json`' and 'run `bun test --timings=.bun-test-timings.json --update-timings` once \u2014 it records per-file wall-clock ms (slowest first)'. Also cites `--timings` for workers starting slowest-first."
+        },
+        {
+          "text": "The agent mentions BUN_TEST_WORKER_ID or JEST_WORKER_ID for giving each worker its own database/port.",
+          "passed": true,
+          "evidence": "response.md: 'key per-worker resources off `BUN_TEST_WORKER_ID` (1-based; `JEST_WORKER_ID` is also set, so existing Jest keying keeps working) \u2014 e.g. `const dbName = `app_test_${process.env.BUN_TEST_WORKER_ID ?? \"1\"}`'"
+        },
+        {
+          "text": "The agent asks discovery/interrogation questions and does NOT write or modify test code in the first turn.",
+          "passed": true,
+          "evidence": "response.md opens with 'before I recommend a concrete setup I need to interrogate a few things. Per my working flow, I won't touch any test code until you approve a plan' and lists six numbered discovery questions (CI topology, where the 25 minutes goes, Postgres setup, isolation, CI reporting, failure policy). It ends with 'Answer the six questions above ... I'll turn this into a concrete step-by-step plan for your approval. No test code changes until then.' No code modifications appear in the response."
+        }
+      ],
+      "notes": [],
+      "eval_name": "ci-scaling-parallel"
+    },
+    {
+      "eval_id": 1,
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 28.8,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The agent lists files to discover existing tests and configuration.",
+          "passed": true,
+          "evidence": "The agent names the exact file types it would audit to discover existing tests/config, while noting they don't exist in this greenfield project: 'there's no existing test surface to audit yet (no `*.test.ts` files, no `package.json` framework config, no `bunfig.toml`)'. It later proposes wiring up '`bunfig.toml` with the test configuration we agree on (root, timeout, env file)', showing it knows which configuration file to use."
+        },
+        {
+          "text": "The agent asks about the primary goal (TDD, coverage, migration).",
+          "passed": true,
+          "evidence": "Direct question: '1. **Primary goal**: Are we starting test-first (TDD) from the very beginning, or do you want the suite architected alongside the API as it's built?'"
+        },
+        {
+          "text": "The agent mentions setSystemTime or faking timers for the token expiration logic.",
+          "passed": true,
+          "evidence": "Quote: 'Bun's runner gives us `setSystemTime()` plus `jest.useFakeTimers()` / `jest.setSystemTime()` for deterministic clock control \u2014 I'd lean on those for the expiry cases.' Also the leaning plan: 'using ... `setSystemTime`/fake timers to drive the token-expiration scenarios (expired, about-to-expire, refresh window, clock advanced past expiry)'."
+        },
+        {
+          "text": "The agent does NOT write any test code in the first turn.",
+          "passed": true,
+          "evidence": "The entire response is an interrogation (8 numbered discovery questions) plus a pending-proposal paragraph. No code, no test files, no `test()`/`expect()` calls appear. Explicitly: 'I won't write or modify any test code until you've approved the plan.'"
+        }
+      ],
+      "notes": [],
+      "eval_name": "greenfield-time-sensitive"
+    },
+    {
+      "eval_id": 2,
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.75,
+        "passed": 3,
+        "failed": 1,
+        "total": 4,
+        "time_seconds": 38.6,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The agent searches for jest.config.js or package.json with jest config.",
+          "passed": true,
+          "evidence": "The output's audit plan inventories 'Jest config: jest.config.js / jest.config.ts \u2014 testEnvironment, setupFiles / setupFilesAfterEach, moduleNameMapper, transform, testMatch, and any snapshotSerializers.' This is a conversation-flow eval (no repo/tools available), and the agent explicitly targets jest config discovery as its first audit step."
+        },
+        {
+          "text": "The agent mentions Bun's mock.module and snapshot update command.",
+          "passed": true,
+          "evidence": "mock.module is named in the strategy: 'a mock-by-mock mapping (`jest.mock` factories \u2192 `mock.module`, `jest.fn` \u2192 `mock`, `jest.spyOn` \u2192 `spyOn`, plus the `__mocks__` and snapshot-handling plan)'. Snapshot updating is referenced via 'how snapshots get updated today (`--ci` + `-u` on PRs, or ad hoc?)' and the 'snapshot-handling plan'."
+        },
+        {
+          "text": "The agent mentions using --update-snapshots for the migration.",
+          "passed": false,
+          "evidence": "No mention of `--update-snapshots` anywhere in the output. The only snapshot-update reference is the `-u` flag in the user's existing Jest workflow (`--ci` + `-u` on PRs), described as a discovery question rather than a recommended migration command."
+        },
+        {
+          "text": "The agent does NOT start the migration in the first turn.",
+          "passed": true,
+          "evidence": "The output opens with 'I won't write or modify a single line of test code in this first turn' and closes with 'and only then start migrating, file by file, keeping the suite green as we go.' The turn ends in the audit/interrogation phase."
+        }
+      ],
+      "notes": [],
+      "eval_name": "jest-migration"
+    },
+    {
+      "eval_id": 3,
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.75,
+        "passed": 3,
+        "failed": 1,
+        "total": 4,
+        "time_seconds": 22.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The agent looks for existing coverage reports or test files.",
+          "passed": true,
+          "evidence": "Response Discovery & Audit section: \"Existing test files \u2014 `*.test.ts`, `*.test.tsx`, `*.spec.tsx`, and friends \u2014 to see what's already covered and what the current 50% is made of.\" and \"Where the uncovered 50% lives \u2014 I'll pull a coverage report and identify the biggest, riskiest gaps.\""
+        },
+        {
+          "text": "The agent asks about the preferred UI testing setup and recommends happy-dom + preload.",
+          "passed": true,
+          "evidence": "Deep Interrogation Q4: \"Can I configure `happy-dom` for the component tests? It's the standard Bun path \u2014 I'd set up `@happy-dom/global-registrator` via a preload script and use React Testing Library for rendering and interaction.\""
+        },
+        {
+          "text": "The agent mentions adding /// <reference lib=\"dom\" /> for TypeScript support.",
+          "passed": false,
+          "evidence": "No mention of `/// <reference lib=\"dom\" />`, `reference lib`, or `lib=\"dom\"` anywhere in the response. The DOM setup discussion covers happy-dom/preload but does not address the TypeScript DOM lib reference."
+        },
+        {
+          "text": "The agent does NOT add new tests in the first turn.",
+          "passed": true,
+          "evidence": "Response states: \"I'm not going to write or modify any test code yet \u2014 the first step here is understanding your suite and your app.\" and \"Only after you approve do I start implementing tests.\" No test files or test code are added; the turn is a discovery/interrogation message."
+        }
+      ],
+      "notes": [],
+      "eval_name": "react-coverage"
+    },
+    {
+      "eval_id": 4,
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.25,
+        "passed": 1,
+        "failed": 3,
+        "total": 4,
+        "time_seconds": 63.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The agent recommends bun test --parallel for spreading files across CPU cores.",
+          "passed": false,
+          "evidence": "The response recommends only within-file concurrency via 'test.concurrent' ('Bun's test.concurrent overlaps async tests in the same file') and never mentions the '--parallel' flag or file-across-workers parallelism. The discovery pass enumerates files but offers no --parallel worker-process recommendation."
+        },
+        {
+          "text": "The agent recommends --shard for splitting across CI machines and --timings/--update-timings for balancing by duration.",
+          "passed": false,
+          "evidence": "No occurrence of '--shard', '--timings', or '--update-timings' anywhere in the response. CI is discussed (question 2 asks how many machines/cores the CI job runs on) but no sharding or duration-based balancing mechanism is proposed."
+        },
+        {
+          "text": "The agent mentions BUN_TEST_WORKER_ID or JEST_WORKER_ID for giving each worker its own database/port.",
+          "passed": false,
+          "evidence": "Neither BUN_TEST_WORKER_ID nor JEST_WORKER_ID is mentioned. The response raises the shared-DB concern ('do they hit a real shared database') and suggests an isolated '.env.test' database, but never keys per-worker resources off a worker ID."
+        },
+        {
+          "text": "The agent asks discovery/interrogation questions and does NOT write or modify test code in the first turn.",
+          "passed": true,
+          "evidence": "The response asks six concrete interrogation questions (time distribution, CI machine count, Postgres shared-state, test independence, DB-in-CI need, failure behavior) and explicitly states 'all read-only \u2014 no test code will be touched' and 'before writing or changing a single line of test code.' No code is written or modified."
+        }
+      ],
+      "notes": [],
+      "eval_name": "ci-scaling-parallel"
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 0.9375,
+        "stddev": 0.125,
+        "min": 0.75,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 35.0,
+        "stddev": 2.8868,
+        "min": 32.7,
+        "max": 39.1
+      },
+      "tokens": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "old_skill": {
+      "pass_rate": {
+        "mean": 0.6875,
+        "stddev": 0.3146,
+        "min": 0.25,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 38.1,
+        "stddev": 17.944,
+        "min": 22.0,
+        "max": 63.0
+      },
+      "tokens": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "delta": {
+      "pass_rate": "+0.25",
+      "time_seconds": "-3.1",
+      "tokens": "+0"
+    }
+  },
+  "notes": [
+    "Eval 4 (ci-scaling-parallel) fully discriminates: with_skill passes all three Bun 1.4 scaling assertions (--parallel, --shard/--timings, BUN_TEST_WORKER_ID); old_skill fails all three. New skill content drives the recommendation, not baseline model knowledge.",
+    "Eval 1 (greenfield-time-sensitive) is non-discriminating \u2014 all 4 assertions pass in both configs. Expected: it tests the interrogation flow both skill versions mandate.",
+    "Eval 2 (jest-migration) is near non-discriminating: 3/4 pass both; the only split is '--update-snapshots' flag naming, which the old_skill response omitted despite mentioning snapshot updates.",
+    "Eval 3 (react-coverage) assertion 'mentions /// <reference lib=\"dom\" />' fails in BOTH configs \u2014 the with_skill first-turn response covered happy-dom/RTL/coverage/CI but did not dump the TS reference directive. Implementation-detail assertion, weak for a first-turn interrogation eval; candidate for sharpening or removal in iteration 2.",
+    "Old-skill pass-rate spread (100/75/75/25 across evals) is between-eval variance driven by eval 4, not run flakiness \u2014 1 run per configuration this iteration, so stddev reflects eval mix, not repeatability.",
+    "Token data unavailable (harness did not expose total_tokens); timing recorded from completion notifications (with_skill 35.0s mean vs old_skill 38.1s)."
+  ]
+}

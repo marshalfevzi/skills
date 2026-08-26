@@ -1,0 +1,11 @@
+{
+  "eval_id": 1,
+  "eval_name": "greenfield-time-sensitive",
+  "prompt": "I need a testing suite for my new project. It's a TypeScript API using Bun. I have some time-sensitive logic for token expiration.",
+  "assertions": [
+    "The agent lists files to discover existing tests and configuration.",
+    "The agent asks about the primary goal (TDD, coverage, migration).",
+    "The agent mentions setSystemTime or faking timers for the token expiration logic.",
+    "The agent does NOT write any test code in the first turn."
+  ]
+}
