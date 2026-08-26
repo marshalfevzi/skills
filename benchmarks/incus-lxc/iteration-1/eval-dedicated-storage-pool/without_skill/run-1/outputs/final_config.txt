@@ -1,0 +1,58 @@
+=== incus storage show ws2b-fastdata ===
+config:
+  source: /var/lib/incus/storage-pools/ws2b-fastdata
+description: ""
+name: ws2b-fastdata
+driver: dir
+used_by:
+- /1.0/instances/ws2b-bulk
+- /1.0/storage-pools/ws2b-fastdata/volumes/custom/ws2b-extras
+status: Created
+locations:
+- none
+
+=== incus storage volume list ws2b-fastdata ===
++-----------+-------------+-------------+--------------+---------+
+|   TYPE    |    NAME     | DESCRIPTION | CONTENT-TYPE | USED BY |
++-----------+-------------+-------------+--------------+---------+
+| container | ws2b-bulk   |             | filesystem   | 1       |
++-----------+-------------+-------------+--------------+---------+
+| custom    | ws2b-extras |             | filesystem   | 1       |
++-----------+-------------+-------------+--------------+---------+
+
+=== incus config show ws2b-bulk ===
+architecture: aarch64
+config:
+  image.architecture: arm64
+  image.description: Debian bookworm arm64 (20260826_05:24)
+  image.os: Debian
+  image.release: bookworm
+  image.serial: "20260826_05:24"
+  image.type: squashfs
+  image.variant: default
+  volatile.base_image: 657f2f78225e24e2e59b03eaae9289df49f98759542e4e18032a66bf46948e3f
+  volatile.cloud-init.instance-id: bba89dcd-d8a0-46f9-9bc7-6ab51a17f6cb
+  volatile.eth0.host_name: veth1a7105cc
+  volatile.eth0.hwaddr: 00:16:3e:d8:42:82
+  volatile.idmap.base: "0"
+  volatile.idmap.current: '[{"Isuid":true,"Isgid":false,"Hostid":1000000,"Nsid":0,"Maprange":1000000000},{"Isuid":false,"Isgid":true,"Hostid":1000000,"Nsid":0,"Maprange":1000000000}]'
+  volatile.idmap.next: '[{"Isuid":true,"Isgid":false,"Hostid":1000000,"Nsid":0,"Maprange":1000000000},{"Isuid":false,"Isgid":true,"Hostid":1000000,"Nsid":0,"Maprange":1000000000}]'
+  volatile.last_state.idmap: '[{"Isuid":true,"Isgid":false,"Hostid":1000000,"Nsid":0,"Maprange":1000000000},{"Isuid":false,"Isgid":true,"Hostid":1000000,"Nsid":0,"Maprange":1000000000}]'
+  volatile.last_state.power: RUNNING
+  volatile.uuid: 532afbab-524a-4515-a925-7015096cc017
+  volatile.uuid.generation: 532afbab-524a-4515-a925-7015096cc017
+devices:
+  root:
+    path: /
+    pool: ws2b-fastdata
+    type: disk
+  ws2b-extras:
+    path: /mnt/extras
+    pool: ws2b-fastdata
+    source: ws2b-extras
+    type: disk
+ephemeral: false
+profiles:
+- default
+stateful: false
+description: ""

@@ -1,0 +1,32 @@
+{
+  "expectations": [
+    {
+      "text": "Instance ws1a-webapp exists and reports RUNNING",
+      "passed": true,
+      "evidence": "verification.txt: 'ws1a-webapp,RUNNING,10.76.67.172 (eth0)...,CONTAINER,1' from incus list"
+    },
+    {
+      "text": "HTTP GET http://localhost:8080 executed inside the VM returns 200 with a body containing 'hello from incus'",
+      "passed": true,
+      "evidence": "verification.txt curl output: '<!doctype html><html><body><h1>hello from incus</h1></body></html>'; transcript Step 5 shows HTTP 200 via curl -w"
+    },
+    {
+      "text": "Instance ws1a-webapp has limits.cpu=1 and limits.memory=512MiB",
+      "passed": true,
+      "evidence": "verification.txt: limits.cpu -> 1, limits.memory -> 512MiB via incus config get"
+    },
+    {
+      "text": "Snapshot named clean exists on ws1a-webapp",
+      "passed": true,
+      "evidence": "verification.txt snapshots query returns /1.0/instances/ws1a-webapp/snapshots/ws1a-clean (token-prefixed requested name 'clean')"
+    }
+  ],
+  "summary": {"passed": 4, "failed": 0, "total": 4, "pass_rate": 1.0},
+  "timing": {"executor_duration_seconds": 282.0, "total_duration_seconds": 282.0},
+  "claims": [
+    {"claim": "Skill visibly guided execution (daemon-reach check, --config at launch, proxy device, file push over nested quoting)", "type": "process", "verified": true, "evidence": "transcript cites SKILL.md sections per step; commands match skill grammar"},
+    {"claim": "Port checked free before binding host :8080", "type": "process", "verified": true, "evidence": "transcript Step 4: ss -ltn grep before device add"}
+  ],
+  "user_notes_summary": {"uncertainties": [], "needs_review": [], "workarounds": []},
+  "eval_feedback": {"overall": "Assertions verified against live daemon state captured post-run (instance later removed to free VM port 8080 for the paired baseline run; raw evidence preserved in outputs/verification.txt)."}
+}

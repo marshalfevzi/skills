@@ -1,0 +1,16 @@
+{
+  "eval_id": 3,
+  "eval_name": "isolated-project-network",
+  "prompt": "We have a contractor starting Monday. Give them their own Incus project called `contractors` with its own profiles and network, launch an Alpine container `sandbox` inside that project, and prove they're isolated: the instance must be invisible from the default project, and its traffic must ride a separate bridge.",
+  "tokens": {
+    "with_skill": "ws3a-",
+    "without_skill": "ws3b-"
+  },
+  "assertions": [
+    "Project <tok>contractors exists in incus project list",
+    "Project <tok>contractors has features.profiles=true (its own profiles)",
+    "<tok>sandbox does not appear in the default project's incus list but appears in --project <tok>contractors incus list",
+    "<tok>sandbox's NIC resolves to a network other than the default project's incusbr0 (its own bridge)"
+  ],
+  "assertion_note": "Originally required features.networks=true; amended before grading: on this daemon (Incus 6.0.0, no OVN) enabling it blinds the project to all networks (network list empty, launches impossible), so neither configuration can satisfy the original form. The tested intent - project with own profiles and a distinct bridge - is asserted instead."
+}

@@ -1,0 +1,320 @@
+{
+  "metadata": {
+    "skill_name": "incus-lxc",
+    "skill_path": "skills/incus-lxc",
+    "executor_model": "openrouter/stealth/ox-alpha",
+    "analyzer_model": "not recorded",
+    "timestamp": "2026-08-26T13:17:25Z",
+    "evals_run": [
+      1,
+      2,
+      3
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 2,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 220.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Storage pool ws2a-fastdata exists in incus storage list",
+          "passed": true,
+          "evidence": "verification.txt: 'ws2a-fastdata,dir,/var/lib/incus/storage-pools/ws2a-fastdata,,2,CREATED'"
+        },
+        {
+          "text": "Instance ws2a-bulk exists, RUNNING, and its root device pool property is ws2a-fastdata",
+          "passed": true,
+          "evidence": "verification.txt: instance row RUNNING; 'root pool' command returned ws2a-fastdata"
+        },
+        {
+          "text": "Custom volume ws2a-extras exists on pool ws2a-fastdata with size 1GiB recorded in its config",
+          "passed": true,
+          "evidence": "verification.txt volume show: type custom, content_type filesystem, config size: 1GiB"
+        },
+        {
+          "text": "ws2a-extras is attached to ws2a-bulk as a disk device (visible in incus config show)",
+          "passed": true,
+          "evidence": "verification.txt device list shows root + ws2a-extras; transcript config show excerpt has ws2a-extras disk path=/mnt/extras source=ws2a-extras"
+        }
+      ],
+      "notes": [
+        "dir pools do not enforce size=1GiB on ext4 volumes without project quotas; df inside container shows 134G"
+      ],
+      "eval_name": "dedicated-storage-pool"
+    },
+    {
+      "eval_id": 1,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 282.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Instance ws1a-webapp exists and reports RUNNING",
+          "passed": true,
+          "evidence": "verification.txt: 'ws1a-webapp,RUNNING,10.76.67.172 (eth0)...,CONTAINER,1' from incus list"
+        },
+        {
+          "text": "HTTP GET http://localhost:8080 executed inside the VM returns 200 with a body containing 'hello from incus'",
+          "passed": true,
+          "evidence": "verification.txt curl output: '<!doctype html><html><body><h1>hello from incus</h1></body></html>'; transcript Step 5 shows HTTP 200 via curl -w"
+        },
+        {
+          "text": "Instance ws1a-webapp has limits.cpu=1 and limits.memory=512MiB",
+          "passed": true,
+          "evidence": "verification.txt: limits.cpu -> 1, limits.memory -> 512MiB via incus config get"
+        },
+        {
+          "text": "Snapshot named clean exists on ws1a-webapp",
+          "passed": true,
+          "evidence": "verification.txt snapshots query returns /1.0/instances/ws1a-webapp/snapshots/ws1a-clean (token-prefixed requested name 'clean')"
+        }
+      ],
+      "notes": [],
+      "eval_name": "deploy-web-with-profile"
+    },
+    {
+      "eval_id": 3,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 397.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Project ws3a-contractors exists in incus project list",
+          "passed": true,
+          "evidence": "verification.txt project list row: 'ws3a-contractors,...,3'"
+        },
+        {
+          "text": "Project ws3a-contractors has features.profiles=true (its own profiles)",
+          "passed": true,
+          "evidence": "verification.txt: incus project get features.profiles -> true; project show grep confirms"
+        },
+        {
+          "text": "ws3a-sandbox does not appear in the default project's incus list but appears in --project ws3a-contractors incus list",
+          "passed": true,
+          "evidence": "verification.txt: default-project grep -> NOT_VISIBLE_IN_DEFAULT; project list row 'ws3a-sandbox,RUNNING,10.100.50.114'"
+        },
+        {
+          "text": "ws3a-sandbox's NIC resolves to a network other than the default project's incusbr0 (its own bridge)",
+          "passed": true,
+          "evidence": "profile device show: eth0 network=ws3a-br0; host bridges show ws3a-br0 UP 10.100.50.1/24 vs incusbr0 10.76.67.1/24; sandbox IP 10.100.50.114 on ws3a-br0 subnet"
+        }
+      ],
+      "notes": [
+        "project-scoped managed networks require OVN on Incus 6.0.0; flag sets but blinds project to networks",
+        "skill administration.md wording could warn more strongly about features.networks without OVN",
+        "separate bridge in default project + profile NIC reference"
+      ],
+      "eval_name": "isolated-project-network"
+    },
+    {
+      "eval_id": 2,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 247.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Storage pool ws2b-fastdata exists in incus storage list",
+          "passed": true,
+          "evidence": "verification.txt: 'ws2b-fastdata,dir,/var/lib/incus/storage-pools/ws2b-fastdata,,2,CREATED'"
+        },
+        {
+          "text": "Instance ws2b-bulk exists, RUNNING, and its root device pool property is ws2b-fastdata",
+          "passed": true,
+          "evidence": "verification.txt: instance row RUNNING; 'root pool' command returned ws2b-fastdata"
+        },
+        {
+          "text": "Custom volume ws2b-extras exists on pool ws2b-fastdata with size 1GiB recorded in its config",
+          "passed": true,
+          "evidence": "verification.txt volume show: type custom, content_type filesystem, config size: 1GiB"
+        },
+        {
+          "text": "ws2b-extras is attached to ws2b-bulk as a disk device (visible in incus config show)",
+          "passed": true,
+          "evidence": "verification.txt device list shows root + ws2b-extras; transcript final devices block has ws2b-extras disk path=/mnt/extras"
+        }
+      ],
+      "notes": [
+        "attach-path validation retry; dir-driver size not enforced",
+        "explicit mount path on retry"
+      ],
+      "eval_name": "dedicated-storage-pool"
+    },
+    {
+      "eval_id": 1,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 314.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Instance ws1b-webapp exists and reports RUNNING",
+          "passed": true,
+          "evidence": "verification.txt: 'ws1b-webapp,RUNNING,10.76.67.62 (eth0)...,CONTAINER,1'"
+        },
+        {
+          "text": "HTTP GET http://localhost:8080 executed inside the VM returns 200 with a body containing 'hello from incus'",
+          "passed": true,
+          "evidence": "verification.txt curl output: 'hello from incus'; transcript Step 6 shows same request from VM host"
+        },
+        {
+          "text": "Instance ws1b-webapp has limits.cpu=1 and limits.memory=512MiB",
+          "passed": true,
+          "evidence": "verification.txt: limits.cpu -> 1, limits.memory -> 512MiB"
+        },
+        {
+          "text": "Snapshot named clean exists on ws1b-webapp",
+          "passed": true,
+          "evidence": "verification.txt snapshots query returns /1.0/instances/ws1b-webapp/snapshots/clean"
+        }
+      ],
+      "notes": [
+        "ubuntu: remote absent on stock Incus (noted by run agent)",
+        "switched to images:ubuntu/24.04 after failed launch"
+      ],
+      "eval_name": "deploy-web-with-profile"
+    },
+    {
+      "eval_id": 3,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 488.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Project ws3b-contractors exists in incus project list",
+          "passed": true,
+          "evidence": "verification.txt project list row: 'ws3b-contractors,...,3'"
+        },
+        {
+          "text": "Project ws3b-contractors has features.profiles=true (its own profiles)",
+          "passed": true,
+          "evidence": "verification.txt: incus project get features.profiles -> true"
+        },
+        {
+          "text": "ws3b-sandbox does not appear in the default project's incus list but appears in --project ws3b-contractors incus list",
+          "passed": true,
+          "evidence": "verification.txt: default-project grep -> NOT_VISIBLE_IN_DEFAULT; project list row 'ws3b-sandbox,RUNNING,10.107.184.75'"
+        },
+        {
+          "text": "ws3b-sandbox's NIC resolves to a network other than the default project's incusbr0 (its own bridge)",
+          "passed": true,
+          "evidence": "profile device show: eth0 nictype=bridged parent=ws3b-br0; host bridges show ws3b-br0 UP 10.107.184.1/24 vs incusbr0 10.76.67.1/24; sandbox IP 10.107.184.75 on ws3b-br0 subnet"
+        }
+      ],
+      "notes": [
+        "bridge not project-scopable on this daemon; 15-char interface name limit forced rename; storage pool named 'default' not 'local'",
+        "default-project bridge + bridged NIC parent; pool rename fix"
+      ],
+      "eval_name": "isolated-project-network"
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 299.6667,
+        "stddev": 89.8128,
+        "min": 220.0,
+        "max": 397.0
+      },
+      "tokens": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 349.6667,
+        "stddev": 124.3959,
+        "min": 247.0,
+        "max": 488.0
+      },
+      "tokens": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "delta": {
+      "pass_rate": "+0.00",
+      "time_seconds": "-50.0",
+      "tokens": "+0"
+    }
+  },
+  "notes": [
+    "All 12 assertions pass in BOTH configurations (100%/100%) - quantitative pass rates do not differentiate; the signal is in unforced errors, time, and process quality.",
+    "With-skill mean time 299.7s vs baseline 349.7s (-14%); largest delta on isolated-project-network (397s vs 488s).",
+    "Baseline runs hit avoidable validation errors the skill prevents: nonexistent 'ubuntu:' remote (deploy-web-with-profile), custom-volume attach without required path (dedicated-storage-pool), two project-scoped bridge attempts plus wrong default-pool name (isolated-project-network).",
+    "With-skill eval 3 probed features.networks feasibility first, documented that enabling it without OVN blinds the project's network view, and kept it off; the baseline enabled it, leaving a latent misconfiguration that passes these assertions.",
+    "Existence/state assertions (pool exists, instance RUNNING) pass everywhere and do not discriminate; error counts, recovery behavior, and wall time carry the observed skill value."
+  ]
+}

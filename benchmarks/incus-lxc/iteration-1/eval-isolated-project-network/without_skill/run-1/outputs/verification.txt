@@ -1,0 +1,16 @@
+== project list ==
+ws3b-contractors,YES,YES,YES,YES,YES,NO,,3
+== features.profiles ==
+true
+== default-project visibility of sandbox ==
+NOT_VISIBLE_IN_DEFAULT
+== project visibility of sandbox ==
+ws3b-sandbox,RUNNING,10.107.184.75 (eth0),fd42:ea63:a5b6:227f:216:3eff:fe33:6d9 (eth0),CONTAINER,0
+== NIC config ==
+== bridges on host ==
+incusbr0         UP             10.76.67.1/24 fd42:fd97:968e:698c::1/64 fe80::216:3eff:feca:12e7/64 
+ws3b-br0         UP             10.107.184.1/24 fd42:ea63:a5b6:227f::1/64 fe80::216:3eff:fe9d:3dbd/64 
+== network used_by bridge exists in default ==
+name: ws3b-br0
+type: bridge
+status: Created

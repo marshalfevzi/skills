@@ -1,0 +1,33 @@
+{
+  "expectations": [
+    {
+      "text": "Project ws3a-contractors exists in incus project list",
+      "passed": true,
+      "evidence": "verification.txt project list row: 'ws3a-contractors,...,3'"
+    },
+    {
+      "text": "Project ws3a-contractors has features.profiles=true (its own profiles)",
+      "passed": true,
+      "evidence": "verification.txt: incus project get features.profiles -> true; project show grep confirms"
+    },
+    {
+      "text": "ws3a-sandbox does not appear in the default project's incus list but appears in --project ws3a-contractors incus list",
+      "passed": true,
+      "evidence": "verification.txt: default-project grep -> NOT_VISIBLE_IN_DEFAULT; project list row 'ws3a-sandbox,RUNNING,10.100.50.114'"
+    },
+    {
+      "text": "ws3a-sandbox's NIC resolves to a network other than the default project's incusbr0 (its own bridge)",
+      "passed": true,
+      "evidence": "profile device show: eth0 network=ws3a-br0; host bridges show ws3a-br0 UP 10.100.50.1/24 vs incusbr0 10.76.67.1/24; sandbox IP 10.100.50.114 on ws3a-br0 subnet"
+    }
+  ],
+  "summary": {"passed": 4, "failed": 0, "total": 4, "pass_rate": 1.0},
+  "timing": {"executor_duration_seconds": 397.0, "total_duration_seconds": 397.0},
+  "claims": [
+    {"claim": "features.networks=true was probed and deliberately rejected because no OVN on this daemon", "type": "process", "verified": true, "evidence": "transcript feasibility probe: network create inside probe project errored 'OVN isn't currently available'; final project has features.profiles/images/storage.* but networks left unset"},
+    {"claim": "Sandbox outbound connectivity verified after enabling ipv4.nat", "type": "factual", "verified": true, "evidence": "transcript Step 5c: ping 8.8.8.8 0% loss after network set ipv4.nat=true"},
+    {"claim": "Leftover probe artifacts (ws3a-probe project) intentionally left per clean-up-nothing rule", "type": "process", "verified": true, "evidence": "transcript Final state section"}
+  ],
+  "user_notes_summary": {"uncertainties": ["project-scoped managed networks require OVN on Incus 6.0.0; flag sets but blinds project to networks"], "needs_review": ["skill administration.md wording could warn more strongly about features.networks without OVN"], "workarounds": ["separate bridge in default project + profile NIC reference"]},
+  "eval_feedback": {"overall": "Full pass with the amended assertion set; original features.networks=true form is unsatisfiable on this daemon for either configuration."}
+}

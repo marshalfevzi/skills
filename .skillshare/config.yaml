@@ -1,0 +1,6 @@
+# Activates skillshare project mode for this skills-source repository so that
+# .skillshare/audit-rules.yaml (calibrated audit severities) is honored.
+# Intentionally minimal: no sources/targets configured, so sync/list behavior
+# is unchanged unless you add them.
+audit:
+  block_threshold: CRITICAL

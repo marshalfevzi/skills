@@ -1,0 +1,14 @@
+== storage list ==
+ws2b-fastdata,dir,/var/lib/incus/storage-pools/ws2b-fastdata,,2,CREATED
+== instance ==
+ws2b-bulk,RUNNING,10.76.67.18 (eth0),fd42:fd97:968e:698c:216:3eff:fed8:4282 (eth0),CONTAINER,0
+== root pool ==
+ws2b-fastdata
+== volume show (type/content/size) ==
+config:
+  size: 1GiB
+type: custom
+content_type: filesystem
+== attached devices on bulk ==
+root
+ws2b-extras

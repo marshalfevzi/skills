@@ -1,0 +1,14 @@
+== incus list ==
+ws1b-webapp,RUNNING,10.76.67.62 (eth0),fd42:fd97:968e:698c:216:3eff:feea:c4a0 (eth0),CONTAINER,1
+== limits.cpu ==
+1
+== limits.memory ==
+512MiB
+== snapshots ==
+[
+	"/1.0/instances/ws1b-webapp/snapshots/clean"
+]
+
+== curl :8080 ==
+hello from incus
+

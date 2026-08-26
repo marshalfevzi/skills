@@ -1,0 +1,16 @@
+== project list ==
+ws3a-contractors,YES,YES,YES,YES,NO,NO,,3
+== features.profiles ==
+true
+== default-project visibility of sandbox ==
+NOT_VISIBLE_IN_DEFAULT
+== project visibility of sandbox ==
+ws3a-sandbox,RUNNING,10.100.50.114 (eth0),,CONTAINER,0
+== NIC config ==
+== bridges on host ==
+incusbr0         UP             10.76.67.1/24 fd42:fd97:968e:698c::1/64 fe80::216:3eff:feca:12e7/64 
+ws3a-br0         UP             10.100.50.1/24 
+== network used_by bridge exists in default ==
+name: ws3a-br0
+type: bridge
+status: Created

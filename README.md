@@ -1,68 +1,99 @@
-# Skills Repository
+# Skills with receipts
 
-A decentralized library of capabilities ("Skills") designed for AI consumption and execution. This repository follows the [Agent Skills](https://github.com/agentskills/agentskills) open standard.
+Focused Agent Skills for specialized work — and benchmark evidence you can inspect.
 
-## Overview
+[![CI](https://img.shields.io/github/actions/workflow/status/marshalfevzi/skills/validate.yml?branch=main&label=CI&style=flat-square)](https://github.com/marshalfevzi/skills/actions/workflows/validate.yml)
+[![Repo version](https://img.shields.io/github/package-json/v/marshalfevzi/skills?style=flat-square&label=repo)](https://github.com/marshalfevzi/skills/releases)
+[![License](https://img.shields.io/github/license/marshalfevzi/skills?style=flat-square)](LICENSE)
+[![Bun](https://img.shields.io/badge/runtime-Bun-000000?style=flat-square&logo=bun&logoColor=white)](https://bun.sh)
 
-Agent Skills are a lightweight, open format for extending AI agent capabilities with specialized knowledge and workflows. Each skill is a self-contained directory containing a `SKILL.md` file with metadata and instructions.
+## What this is
 
-This repository serves as a central hub for these capabilities, allowing agents to discover and activate them as needed.
+Each `skills/<name>/` directory is a self-contained Agent Skill: its `SKILL.md` is discovered first, and its references/assets are loaded only when relevant. Skills follow the [Agent Skills standard](https://agentskills.io); this repository's interaction protocol lives in [AGENTS.md](AGENTS.md).
 
-## AGENTS Standard
-
-This repository adheres to the interaction protocol defined in [AGENTS.md](./AGENTS.md). Agents interacting with this repository MUST follow the **Progressive Disclosure** pattern:
-
-1. **Discovery**: List the `skills/` directory.
-2. **Metadata Check**: Read the YAML frontmatter of `SKILL.md`.
-3. **Full Load**: Read the entire `SKILL.md` only if relevant.
-
-## Getting Started
-
-### Prerequisites
-
-- [Bun](https://bun.sh/) runtime installed.
-
-### Installation
+## Quick start
 
 ```bash
+git clone https://github.com/marshalfevzi/skills.git
+cd skills
 bun install
-```
-
-## CLI Usage
-
-### Creating a New Skill
-
-The repository provides an interactive creator to help you gather documentation for a new skill.
-
-```bash
+bun run validate
 bun run new
 ```
 
-This command will:
-1. Prompt for a skill name.
-2. Prompt for one or more URLs to fetch documentation from.
-3. Support recursive fetching from GitHub folders (e.g., `https://github.com/owner/repo/tree/main/docs`).
-4. Support direct downloads for raw files (`.md`, `.mdx`, `.txt`).
-5. Automatically use [markdown.new](https://markdown.new) as a fallback for standard web pages to extract clean markdown content.
+`bun run new` starts the interactive documentation fetcher. Fetched source material lands in `@tmp/<skill-name>/`, and the resulting skill is created under `skills/<name>/` with `SKILL.md` as its entrypoint.
 
-All fetched documentation is saved to `@tmp/<skill-name>/` for you to use when drafting your `SKILL.md`.
+## Skills
 
-## Repository Structure
+| Skill | Focus | Skill content version | Last updated | Tested target | Evidence |
+|---|---|---|---|---|---|
+| [incus-lxc](skills/incus-lxc/SKILL.md) | Operate Incus/LXC instances, images, profiles, storage, networks, projects, snapshots, and safety gates. | 1.0.0 | 2026-08-26 | Incus 6.0.0 (current fixture) | [iteration 1](benchmarks/incus-lxc/iteration-1/benchmark.md) |
 
-- `skills/`: Root directory for all skills.
-  - `<skill-name>/SKILL.md`: The primary entry point for a skill.
-  - `template/`: Template for creating new skills.
-- `scripts/`: Utility scripts for repository maintenance and skill development.
+`1.0.0` is the `version` in the skill's `SKILL.md`; the repository package is separately versioned at `0.1.0`. The Incus version is the version used by the committed fixture, not a compatibility ceiling. `bun-test-runner` remains legacy and unbenchmarked, and `template` is scaffolding, so neither is presented as a maintained skill.
 
-## Governance
+## Benchmarks
 
-- **Validation**: CI runs `bun run validate` on every push and pull request to ensure repository integrity.
-- **Pre-commit Hooks**: [Husky](https://typicode.github.io/husky/) is used to run local checks before commits.
+Eval case definitions live beside the skill at [skills/incus-lxc/evals/evals.json](skills/incus-lxc/evals/evals.json); committed run evidence lives under [benchmarks/incus-lxc/iteration-1](benchmarks/incus-lxc/iteration-1/).
+
+| Configuration | Pass rate | Mean wall time | Range |
+|---|---|---|---|
+| With skill | 100% (12/12 assertions) | 299.7 ± 89.8 s | 220–397 s |
+| Without skill | 100% (12/12 assertions) | 349.7 ± 124.4 s | 247–488 s |
+| Difference | — | −50.0 s (−14%) | — |
+
+This iteration runs three scenarios once with and once without the skill, so the pass rate does not distinguish the configurations; the observed signal is lower mean wall time and fewer avoidable validation errors in the with-skill runs. The recorded zero token values are not a quality metric.
+
+Read the human report ([benchmark.md](benchmarks/incus-lxc/iteration-1/benchmark.md)), the machine-readable summary ([benchmark.json](benchmarks/incus-lxc/iteration-1/benchmark.json)), the test fixture ([fixture.md](benchmarks/incus-lxc/iteration-1/fixture.md)), or any scenario directory: [eval-deploy-web-with-profile](benchmarks/incus-lxc/iteration-1/eval-deploy-web-with-profile/), [eval-dedicated-storage-pool](benchmarks/incus-lxc/iteration-1/eval-dedicated-storage-pool/), [eval-isolated-project-network](benchmarks/incus-lxc/iteration-1/eval-isolated-project-network/). Treat this as one iteration's snapshot, not a general performance guarantee.
+
+## Development
+
+### Add or update a skill
+
+Run `bun run new` when external documentation should be fetched. Create a kebab-case `skills/<name>/` from `skills/template/SKILL.md`; fill in `name`, `description`, `version`, and `category`. Keep long material in `references/` or `assets/`, and make the frontmatter description sufficient for discovery. Run `bun run validate` before committing.
+
+### Add an eval
+
+Keep case definitions beside the skill in `skills/<name>/evals/`, and commit each run under `benchmarks/<name>/<iteration>/` with a human summary, a machine-readable summary, a fixture, feedback, and per-scenario `with_skill`/`without_skill` artifacts. When editing a skill, update its table row's content version, last-updated date, tested target, and evidence link. Do not put locally cloned repositories under `benchmarks/`; `tmp/` is for ignored local clones.
+
+### Release
+
+Run `bun run release` (`standard-version`); pushing a `v*` tag drives the draft GitHub Release workflow. Keep the repository package version distinct from each skill's content version.
+
+## Repository map
+
+```
+skills/incus-lxc/
+├── SKILL.md
+├── references/
+└── evals/
+benchmarks/incus-lxc/iteration-1/
+├── benchmark.md
+├── benchmark.json
+├── fixture.md
+├── eval-deploy-web-with-profile/
+├── eval-dedicated-storage-pool/
+└── eval-isolated-project-network/
+scripts/
+CONTRIBUTING.md
+LICENSE
+```
+
+The root README is the index; per-iteration detail lives under `benchmarks/`.
+
+## Sources & thanks
+
+- [Agent Skills specification](https://github.com/agentskills/agentskills) — the skill format this repository follows.
+- [Anthropic's skills examples](https://github.com/anthropics/skills) — skill structure and phrasing reference.
+- [Incus documentation](https://linuxcontainers.org/incus/docs/main/) — source material for the incus-lxc skill.
+- [Linux Containers image server](https://images.linuxcontainers.org) — fixture images used by the benchmark.
+- [awesome-readme](https://github.com/matiassingers/awesome-readme) — README design reference.
 
 ## Contributing
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines on how to add new skills to this repository.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for the community standards.
 
 ## License
 
-This project is licensed under the terms of the [LICENSE](./LICENSE) file.
+Licensed under the terms of the [LICENSE](LICENSE) file.
+
+Last reviewed: 2026-08-26

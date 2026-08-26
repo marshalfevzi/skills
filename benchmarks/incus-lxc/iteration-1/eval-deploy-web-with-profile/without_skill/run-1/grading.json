@@ -1,0 +1,31 @@
+{
+  "expectations": [
+    {
+      "text": "Instance ws1b-webapp exists and reports RUNNING",
+      "passed": true,
+      "evidence": "verification.txt: 'ws1b-webapp,RUNNING,10.76.67.62 (eth0)...,CONTAINER,1'"
+    },
+    {
+      "text": "HTTP GET http://localhost:8080 executed inside the VM returns 200 with a body containing 'hello from incus'",
+      "passed": true,
+      "evidence": "verification.txt curl output: 'hello from incus'; transcript Step 6 shows same request from VM host"
+    },
+    {
+      "text": "Instance ws1b-webapp has limits.cpu=1 and limits.memory=512MiB",
+      "passed": true,
+      "evidence": "verification.txt: limits.cpu -> 1, limits.memory -> 512MiB"
+    },
+    {
+      "text": "Snapshot named clean exists on ws1b-webapp",
+      "passed": true,
+      "evidence": "verification.txt snapshots query returns /1.0/instances/ws1b-webapp/snapshots/clean"
+    }
+  ],
+  "summary": {"passed": 4, "failed": 0, "total": 4, "pass_rate": 1.0},
+  "timing": {"executor_duration_seconds": 314.0, "total_duration_seconds": 314.0},
+  "claims": [
+    {"claim": "Baseline tried nonexistent 'ubuntu:' remote first", "type": "process", "verified": true, "evidence": "transcript Step 2: \"first attempt ubuntu:24.04 failed: Error: The remote \\\"ubuntu\\\" doesn't exist\" then recovered to images:ubuntu/24.04"}
+  ],
+  "user_notes_summary": {"uncertainties": ["ubuntu: remote absent on stock Incus (noted by run agent)"], "needs_review": [], "workarounds": ["switched to images:ubuntu/24.04 after failed launch"]},
+  "eval_feedback": {"overall": "Full pass. One unforced error (nonexistent ubuntu: remote) that the skill's grounded remote list would have prevented."}
+}

@@ -1,0 +1,31 @@
+{
+  "expectations": [
+    {
+      "text": "Storage pool ws2b-fastdata exists in incus storage list",
+      "passed": true,
+      "evidence": "verification.txt: 'ws2b-fastdata,dir,/var/lib/incus/storage-pools/ws2b-fastdata,,2,CREATED'"
+    },
+    {
+      "text": "Instance ws2b-bulk exists, RUNNING, and its root device pool property is ws2b-fastdata",
+      "passed": true,
+      "evidence": "verification.txt: instance row RUNNING; 'root pool' command returned ws2b-fastdata"
+    },
+    {
+      "text": "Custom volume ws2b-extras exists on pool ws2b-fastdata with size 1GiB recorded in its config",
+      "passed": true,
+      "evidence": "verification.txt volume show: type custom, content_type filesystem, config size: 1GiB"
+    },
+    {
+      "text": "ws2b-extras is attached to ws2b-bulk as a disk device (visible in incus config show)",
+      "passed": true,
+      "evidence": "verification.txt device list shows root + ws2b-extras; transcript final devices block has ws2b-extras disk path=/mnt/extras"
+    }
+  ],
+  "summary": {"passed": 4, "failed": 0, "total": 4, "pass_rate": 1.0},
+  "timing": {"executor_duration_seconds": 247.0, "total_duration_seconds": 247.0},
+  "claims": [
+    {"claim": "First volume attach attempt failed for missing path", "type": "process", "verified": true, "evidence": "transcript Step 3: 'Error: ... Custom filesystem volumes require a path to be defined', retry with /mnt/extras succeeded"}
+  ],
+  "user_notes_summary": {"uncertainties": ["attach-path validation retry; dir-driver size not enforced"], "needs_review": [], "workarounds": ["explicit mount path on retry"]},
+  "eval_feedback": {"overall": "Full pass; one avoidable validation error the skill's attach recipe (path included) prevents."}
+}

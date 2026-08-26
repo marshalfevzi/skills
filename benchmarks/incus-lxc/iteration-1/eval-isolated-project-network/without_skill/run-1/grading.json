@@ -1,0 +1,32 @@
+{
+  "expectations": [
+    {
+      "text": "Project ws3b-contractors exists in incus project list",
+      "passed": true,
+      "evidence": "verification.txt project list row: 'ws3b-contractors,...,3'"
+    },
+    {
+      "text": "Project ws3b-contractors has features.profiles=true (its own profiles)",
+      "passed": true,
+      "evidence": "verification.txt: incus project get features.profiles -> true"
+    },
+    {
+      "text": "ws3b-sandbox does not appear in the default project's incus list but appears in --project ws3b-contractors incus list",
+      "passed": true,
+      "evidence": "verification.txt: default-project grep -> NOT_VISIBLE_IN_DEFAULT; project list row 'ws3b-sandbox,RUNNING,10.107.184.75'"
+    },
+    {
+      "text": "ws3b-sandbox's NIC resolves to a network other than the default project's incusbr0 (its own bridge)",
+      "passed": true,
+      "evidence": "profile device show: eth0 nictype=bridged parent=ws3b-br0; host bridges show ws3b-br0 UP 10.107.184.1/24 vs incusbr0 10.76.67.1/24; sandbox IP 10.107.184.75 on ws3b-br0 subnet"
+    }
+  ],
+  "summary": {"passed": 4, "failed": 0, "total": 4, "pass_rate": 1.0},
+  "timing": {"executor_duration_seconds": 488.0, "total_duration_seconds": 488.0},
+  "claims": [
+    {"claim": "Bridge cannot be created inside a non-default project without OVN; workaround used", "type": "process", "verified": true, "evidence": "transcript Step 2: two failed attempts ('Network interface is too long', 'Network type does not support non-default projects', 'OVN isn't currently available') then default-project ws3b-br0 + profile parent wiring"},
+    {"claim": "Profile root disk initially pointed at nonexistent pool 'local'", "type": "process", "verified": true, "evidence": "transcript Step 3: launch failed 'Storage pool not found'; fixed with profile device set pool=default"}
+  ],
+  "user_notes_summary": {"uncertainties": ["bridge not project-scopable on this daemon; 15-char interface name limit forced rename; storage pool named 'default' not 'local'"], "needs_review": [], "workarounds": ["default-project bridge + bridged NIC parent; pool rename fix"]},
+  "eval_feedback": {"overall": "Full pass; three unforced errors along the way (project-scoped bridge attempts, pool name) that cost ~90s versus the paired run."}
+}

@@ -1,0 +1,15 @@
+{
+  "eval_id": 1,
+  "eval_name": "deploy-web-with-profile",
+  "prompt": "Set up a small web server for me on our Incus box: launch an Ubuntu container named `webapp`, install nginx inside it, make sure it serves a page that says 'hello from incus' when I hit it from the host on port 8080, and cap it at 1 vCPU / 512 MiB RAM. Also take a snapshot called `clean` once it's working.",
+  "tokens": {
+    "with_skill": "ws1a-",
+    "without_skill": "ws1b-"
+  },
+  "assertions": [
+    "Instance <tok>webapp exists and reports RUNNING",
+    "HTTP GET http://localhost:8080 executed inside the VM returns 200 with a body containing 'hello from incus'",
+    "Instance <tok>webapp has limits.cpu=1 and limits.memory=512MiB",
+    "Snapshot named clean exists on <tok>webapp"
+  ]
+}

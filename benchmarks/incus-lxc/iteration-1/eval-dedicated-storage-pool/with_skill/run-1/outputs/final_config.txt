@@ -1,0 +1,95 @@
+=== incus storage list ===
++---------------+--------+--------------------------------------------+-------------+---------+---------+
+|     NAME      | DRIVER |                   SOURCE                   | DESCRIPTION | USED BY |  STATE  |
++---------------+--------+--------------------------------------------+-------------+---------+---------+
+| default       | dir    | /var/lib/incus/storage-pools/default       |             | 2       | CREATED |
++---------------+--------+--------------------------------------------+-------------+---------+---------+
+| ws2a-fastdata | dir    | /var/lib/incus/storage-pools/ws2a-fastdata |             | 2       | CREATED |
++---------------+--------+--------------------------------------------+-------------+---------+---------+
+| ws2b-fastdata | dir    | /var/lib/incus/storage-pools/ws2b-fastdata |             | 2       | CREATED |
++---------------+--------+--------------------------------------------+-------------+---------+---------+
+
+=== incus storage show ws2a-fastdata ===
+config:
+  source: /var/lib/incus/storage-pools/ws2a-fastdata
+description: ""
+name: ws2a-fastdata
+driver: dir
+used_by:
+- /1.0/instances/ws2a-bulk
+- /1.0/storage-pools/ws2a-fastdata/volumes/custom/ws2a-extras
+status: Created
+locations:
+- none
+
+=== incus storage volume list ws2a-fastdata ===
++-----------+-------------+-------------+--------------+---------+
+|   TYPE    |    NAME     | DESCRIPTION | CONTENT-TYPE | USED BY |
++-----------+-------------+-------------+--------------+---------+
+| container | ws2a-bulk   |             | filesystem   | 1       |
++-----------+-------------+-------------+--------------+---------+
+| custom    | ws2a-extras |             | filesystem   | 1       |
++-----------+-------------+-------------+--------------+---------+
+
+=== incus storage volume show ws2a-fastdata ws2a-extras ===
+config:
+  size: 1GiB
+  volatile.idmap.last: '[{"Isuid":true,"Isgid":false,"Hostid":1000000,"Nsid":0,"Maprange":1000000000},{"Isuid":false,"Isgid":true,"Hostid":1000000,"Nsid":0,"Maprange":1000000000}]'
+  volatile.idmap.next: '[{"Isuid":true,"Isgid":false,"Hostid":1000000,"Nsid":0,"Maprange":1000000000},{"Isuid":false,"Isgid":true,"Hostid":1000000,"Nsid":0,"Maprange":1000000000}]'
+description: ""
+name: ws2a-extras
+type: custom
+used_by:
+- /1.0/instances/ws2a-bulk
+location: none
+content_type: filesystem
+project: default
+created_at: 2026-08-26T13:02:28.002626915Z
+
+=== incus config show ws2a-bulk ===
+architecture: aarch64
+config:
+  image.architecture: arm64
+  image.description: Debian bookworm arm64 (20260826_05:24)
+  image.os: Debian
+  image.release: bookworm
+  image.serial: "20260826_05:24"
+  image.type: squashfs
+  image.variant: default
+  volatile.base_image: 657f2f78225e24e2e59b03eaae9289df49f98759542e4e18032a66bf46948e3f
+  volatile.cloud-init.instance-id: 70d4faf0-25e6-4296-aa4b-645171cc3e84
+  volatile.eth0.host_name: vethdcc1f34c
+  volatile.eth0.hwaddr: 00:16:3e:a5:c1:7a
+  volatile.idmap.base: "0"
+  volatile.idmap.current: '[{"Isuid":true,"Isgid":false,"Hostid":1000000,"Nsid":0,"Maprange":1000000000},{"Isuid":false,"Isgid":true,"Hostid":1000000,"Nsid":0,"Maprange":1000000000}]'
+  volatile.idmap.next: '[{"Isuid":true,"Isgid":false,"Hostid":1000000,"Nsid":0,"Maprange":1000000000},{"Isuid":false,"Isgid":true,"Hostid":1000000,"Nsid":0,"Maprange":1000000000}]'
+  volatile.last_state.idmap: '[{"Isuid":true,"Isgid":false,"Hostid":1000000,"Nsid":0,"Maprange":1000000000},{"Isuid":false,"Isgid":true,"Hostid":1000000,"Nsid":0,"Maprange":1000000000}]'
+  volatile.last_state.power: RUNNING
+  volatile.uuid: fa68b481-0b66-40e8-9425-2cc0eb4fa219
+  volatile.uuid.generation: fa68b481-0b66-40e8-9425-2cc0eb4fa219
+devices:
+  root:
+    path: /
+    pool: ws2a-fastdata
+    type: disk
+  ws2a-extras:
+    path: /mnt/extras
+    pool: ws2a-fastdata
+    source: ws2a-extras
+    type: disk
+ephemeral: false
+profiles:
+- default
+stateful: false
+description: ""
+
+=== incus info ws2a-bulk (storage section) ===
++-------------+---------+---------------------+-----------------------------------------------+-----------+-----------+
+|    NAME     |  STATE  |        IPV4         |                     IPV6                      |   TYPE    | SNAPSHOTS |
++-------------+---------+---------------------+-----------------------------------------------+-----------+-----------+
+| ws1a-webapp | RUNNING | 10.76.67.172 (eth0) | fd42:fd97:968e:698c:216:3eff:fe9e:db6f (eth0) | CONTAINER | 0         |
++-------------+---------+---------------------+-----------------------------------------------+-----------+-----------+
+| ws2a-bulk   | RUNNING | 10.76.67.130 (eth0) | fd42:fd97:968e:698c:216:3eff:fea5:c17a (eth0) | CONTAINER | 0         |
++-------------+---------+---------------------+-----------------------------------------------+-----------+-----------+
+| ws2b-bulk   | RUNNING | 10.76.67.18 (eth0)  | fd42:fd97:968e:698c:216:3eff:fed8:4282 (eth0) | CONTAINER | 0         |
++-------------+---------+---------------------+-----------------------------------------------+-----------+-----------+

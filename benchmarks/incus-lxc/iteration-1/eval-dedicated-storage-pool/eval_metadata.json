@@ -1,0 +1,15 @@
+{
+  "eval_id": 2,
+  "eval_name": "dedicated-storage-pool",
+  "prompt": "The default storage pool is getting crowded. Create a new storage pool called `fastdata`, then launch a Debian container named `bulk` whose root disk lives on that pool, attach an extra 1 GiB volume `extras` from the same pool to it, and show me the resulting config.",
+  "tokens": {
+    "with_skill": "ws2a-",
+    "without_skill": "ws2b-"
+  },
+  "assertions": [
+    "Storage pool <tok>fastdata exists in incus storage list",
+    "Instance <tok>bulk exists, RUNNING, and its root device pool property is <tok>fastdata",
+    "Custom volume <tok>extras exists on pool <tok>fastdata with size 1GiB",
+    "<tok>extras is attached to <tok>bulk as a disk device (visible in incus config show)"
+  ]
+}

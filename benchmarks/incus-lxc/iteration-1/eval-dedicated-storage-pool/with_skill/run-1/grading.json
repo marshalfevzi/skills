@@ -1,0 +1,32 @@
+{
+  "expectations": [
+    {
+      "text": "Storage pool ws2a-fastdata exists in incus storage list",
+      "passed": true,
+      "evidence": "verification.txt: 'ws2a-fastdata,dir,/var/lib/incus/storage-pools/ws2a-fastdata,,2,CREATED'"
+    },
+    {
+      "text": "Instance ws2a-bulk exists, RUNNING, and its root device pool property is ws2a-fastdata",
+      "passed": true,
+      "evidence": "verification.txt: instance row RUNNING; 'root pool' command returned ws2a-fastdata"
+    },
+    {
+      "text": "Custom volume ws2a-extras exists on pool ws2a-fastdata with size 1GiB recorded in its config",
+      "passed": true,
+      "evidence": "verification.txt volume show: type custom, content_type filesystem, config size: 1GiB"
+    },
+    {
+      "text": "ws2a-extras is attached to ws2a-bulk as a disk device (visible in incus config show)",
+      "passed": true,
+      "evidence": "verification.txt device list shows root + ws2a-extras; transcript config show excerpt has ws2a-extras disk path=/mnt/extras source=ws2a-extras"
+    }
+  ],
+  "summary": {"passed": 4, "failed": 0, "total": 4, "pass_rate": 1.0},
+  "timing": {"executor_duration_seconds": 220.0, "total_duration_seconds": 220.0},
+  "claims": [
+    {"claim": "dir driver chosen deliberately because ZFS/Btrfs unavailable in VM", "type": "quality", "verified": true, "evidence": "transcript cites references/storage.md driver-choice table"},
+    {"claim": "Volume mount writable inside container", "type": "factual", "verified": true, "evidence": "transcript: echo/cat probe round-trip on /mnt/extras"}
+  ],
+  "user_notes_summary": {"uncertainties": ["dir pools do not enforce size=1GiB on ext4 volumes without project quotas; df inside container shows 134G"], "needs_review": [], "workarounds": []},
+  "eval_feedback": {"overall": "No suggestions, eval looks solid; size assertion correctly tests recorded config, not enforced capacity."}
+}
